@@ -1,5 +1,4 @@
 from django.db.models import Count, F
-from django.utils.dateparse import parse_date
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -65,10 +64,12 @@ class MovieViewSet(viewsets.ModelViewSet):
 
         if genres:
             queryset = queryset.filter(
-                genres__id__in=_get_params_as_ints(genres))
+                genres__id__in=_get_params_as_ints(genres)
+            )
         if actors:
             queryset = queryset.filter(
-                actors__id__in=_get_params_as_ints(actors))
+                actors__id__in=_get_params_as_ints(actors)
+            )
         if title:
             queryset = queryset.filter(title__icontains=title)
 
@@ -104,11 +105,7 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
             queryset = queryset.none()
 
         if date:
-            parsed_date = parse_date(date)
-            if parsed_date:
-                queryset = queryset.filter(show_time=date)
-            else:
-                queryset = queryset.none()
+            queryset = queryset.filter(show_time__date=date)
 
         return queryset.annotate(
             tickets_available=(
